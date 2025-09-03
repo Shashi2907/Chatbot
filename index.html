@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>RetailMate Chatbot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f3f3;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .chat-container {
+      width: 400px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0px 4px 8px rgba(0,0,0,0.2);
+      display: flex;
+      flex-direction: column;
+      padding: 16px;
+    }
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      border-bottom: 1px solid #ddd;
+      padding: 10px;
+      height: 400px;
+    }
+    .message {
+      margin: 8px 0;
+      padding: 8px 12px;
+      border-radius: 16px;
+      display: inline-block;
+      max-width: 80%;
+    }
+    .bot {
+      background: #e5e5e5;
+      color: #333;
+      text-align: left;
+    }
+    .user {
+      background: #007bff;
+      color: #fff;
+      text-align: right;
+      float: right;
+    }
+    .input-area {
+      display: flex;
+      margin-top: 10px;
+    }
+    .input-area input {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    .input-area button {
+      margin-left: 6px;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    .input-area button:hover {
+      background: #0056b3;
+    }
+    .human-button {
+      margin-top: 10px;
+      padding: 8px;
+      border: none;
+      border-radius: 6px;
+      background: #ccc;
+      cursor: pointer;
+    }
+    .human-button:hover {
+      background: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <div id="chatBox" class="chat-box"></div>
+
+    <div class="input-area">
+      <input id="userInput" type="text" placeholder="Type your message..."/>
+      <button onclick="sendMessage()">Send</button>
+    </div>
+
+    <button class="human-button" onclick="contactHuman()">Contact Human Agent</button>
+  </div>
+
+  <script>
+    const dummyData = {
+      orderStatus: {
+        "12345": "✅ Your order #12345 is out for delivery and will arrive tomorrow.",
+        "67890": "📦 Your order #67890 has been delivered.",
+      },
+      returnPolicy:
+        "↩️ You can return any item within 7 days of delivery. Refunds are processed within 5 business days.",
+      shippingInfo:
+        "🚚 Standard delivery takes 3–5 business days. Express delivery takes 1–2 business days.",
+      contact:
+        "☎️ Our customer support team is available 24/7 at support@retailmate.com or 1800-123-456.",
+    };
+
+    const chatBox = document.getElementById("chatBox");
+
+    function addMessage(sender, text) {
+      const msg = document.createElement("div");
+      msg.classList.add("message", sender);
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function botReply(input) {
+      let response = "😕 Sorry, I didn’t understand that. Would you like to talk to a human agent?";
+
+      if (input.toLowerCase().includes("order")) {
+        const orderId = input.match(/\d+/)?.[0];
+        if (orderId && dummyData.orderStatus[orderId]) {
+          response = dummyData.orderStatus[orderId];
+        } else {
+          response = "🔎 Can you provide your order ID?";
+        }
+      } else if (input.toLowerCase().includes("return")) {
+        response = dummyData.returnPolicy;
+      } else if (input.toLowerCase().includes("shipping")) {
+        response = dummyData.shippingInfo;
+      } else if (input.toLowerCase().includes("contact")) {
+        response = dummyData.contact;
+      }
+
+      addMessage("bot", response);
+    }
+
+    function sendMessage() {
+      const inputField = document.getElementById("userInput");
+      const text = inputField.value.trim();
+      if (!text) return;
+
+      addMessage("user", text);
+      botReply(text);
+      inputField.value = "";
+    }
+
+    function contactHuman() {
+      addMessage("bot", "👩‍💼 Connecting you to a human agent...");
+    }
+
+    // Initial bot message
+    addMessage("bot", "Hi! I’m RetailMate 🤖. How can I help you today?");
+  </script>
+</body>
+</html>
